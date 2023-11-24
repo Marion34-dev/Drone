@@ -1,106 +1,3 @@
-<!-- 
-<div id="data-container"></div>
-
-<script>
-    async function fetchData() {
-            console.log("Fetching data...");
-
-        try {
-            const response = await fetch("/ap/receive_data/");
-            const data = await response.json();
-
-            if (data.error) {
-                console.error("Error fetching data:", data.error);
-            } else {
-                document.getElementById("data-container").innerText = data.data;
-            }
-        } catch (error) {
-            console.error("Fetch failed:", error);
-        }
-    }
-
-    // Fetch data every second
-    setInterval(fetchData, 1000);
-
-    // Initial fetch on page load
-    window.addEventListener("DOMContentLoaded", fetchData);
-</script> -->
-
-<!-- STREAMS ONCE THE SERVER IS QUIT!!!!! -->
-<!-- <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Continuous Data</title>
-</head>
-
-<body>
-    <div id="data-container"></div>
-
-    <script>
-        const dataContainer = document.getElementById("data-container");
-        const eventSource = new EventSource("/ap/receive_data//");
-
-        eventSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            console.log("Received data:", data);
-
-            // Update the UI with the received data
-            updateUI(data);
-        };
-
-        eventSource.onerror = (error) => {
-            console.error("EventSource error:", error);
-            eventSource.close();
-        };
-
-        function updateUI(data) {
-            function updateUI(data) {
-                // Replace this with your logic to update the UI
-                const formattedData = data.data.trim();  // Remove leading/trailing whitespace
-                dataContainer.innerHTML = `Received Data: ${formattedData}`;
-            }
-
-        }
-    </script>
-</body>
-
-</html> -->
-
-// sse_script.js
-
-document.addEventListener('DOMContentLoaded', function() {
-    const dataContainer = document.getElementById('data-container');
-
-    // Create an EventSource to establish an SSE connection
-    const eventSource = new EventSource("/ap/receive_data/");
-
-    // Event listener for handling SSE messages
-    eventSource.onmessage = function(event) {
-        const data = JSON.parse(event.data);
-
-        // Update the content of the data container
-        updateUI(data);
-    };
-
-    // Event listener for handling SSE errors
-    eventSource.onerror = function(error) {
-        console.error('SSE Error:', error);
-        eventSource.close();
-    };
-
-    function updateUI(data) {
-        const formattedData = data.data.trim();
-        dataContainer.textContent = `Received Data: ${formattedData}`;
-    }
-});
-
-
-<!-- yourapp/templates/yourapp/index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -108,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your App</title>
+    <title>My App</title>
     <script src="{% static 'myApp/sse_script.js' %}"></script>
 </head>
 
@@ -116,4 +13,4 @@ document.addEventListener('DOMContentLoaded', function() {
     <div id="data-container"></div>
 </body>
 
-</html>
+</html> 
