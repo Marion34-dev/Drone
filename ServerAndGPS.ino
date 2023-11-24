@@ -2,7 +2,7 @@
 #include <SPI.h>
 #include <WiFi101.h>
 #include <math.h>
-#include "config.h"
+#include <config.h>
 
 int keyIndex = 0; // network key Index number (needed only for WEP)
 int status = WL_IDLE_STATUS;
