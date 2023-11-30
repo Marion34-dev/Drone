@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Map View</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</head>
+
+<body>
+    <div id="map" style="height: 500px;"></div>
+
+    <script>
+        // Initialize the map
+        let map = L.map('map').setView([0, 0], 13);
+
+        // Add a marker (initialize with default coordinates)
+        let marker = L.marker([0, 0]).addTo(map)
+            .bindPopup('Current Location');
+
+        // Add a tile layer (you can choose different providers)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Function to update the map with new coordinates
+        function updateMap(data) {
+            // Parse the received data to extract latitude and longitude
+            let regexResult = /Latitude: (\d+\.\d+) Longitude: (\d+\.\d+)/.exec(data);
+
+            if (regexResult) {
+                let latitude = parseFloat(regexResult[1]);
+                let longitude = parseFloat(regexResult[2]);
+
+                // Update the map with the new coordinates
+                map.setView([latitude, longitude], 13);
+                marker.setLatLng([latitude, longitude]);
+                console.log('Map updated successfully.', { latitude, longitude });
+            } else {
+                console.error('Invalid data format:', data);
+            }
+        }
+
+        // Function to handle continuous data updates
+        function handleContinuousData(data) {
+            // Update the map with new coordinates
+            updateMap(data);
+
+            // Continue listening for updates
+            startListening();
+        }
+
+        // Function to make an AJAX request to get continuous data
+        function startListening() {
+            $.ajax({
+                url: '/ap/receive_data/',
+                method: 'GET',
+                dataType: 'text',  // Adjusted to expect plain text
+                timeout: 5000,  // Set a timeout of 5 seconds
+
+                success: function (data) {
+                    // Call the function to handle continuous data
+                    handleContinuousData(data);
+                },
+                error: function (error) {
+                    console.error('Error fetching data:', error);
+
+                    // Retry after a delay (e.g., 1 second)
+                    setTimeout(startListening, 1000);
+                }
+            });
+        }
+
+        // Start listening for continuous data
+        
+        startListening();
+        
+
+    </script>
+
+</body>
+
+</html>

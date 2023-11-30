@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>WebSocket</title>
+    <style>
+        #welcomeContainer {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        #coordinatesContainer {
+            font-size: 16px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="welcomeContainer">Welcome! And view the Drone's location in real time</div>
+    <div id="coordinatesContainer"></div>
+
+    <script>
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/ap/receive_data/');
+        let latestCoordinates = null;
+
+        socket.onopen = (event) => {
+            console.log('WebSocket connection opened:', event);
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        socket.onclose = (event) => {
+            console.log('WebSocket connection closed:', event);
+        };
+
+        socket.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                console.log('Received data from server:', data);
+
+                // Update the latest coordinates
+                latestCoordinates = data.coordinates;
+
+                // Display only the latest coordinates in the HTML element
+                const coordinatesContainer = document.getElementById('coordinatesContainer');
+                coordinatesContainer.textContent = `The drone's current location is:\t ${latestCoordinates}`;
+            } catch (error) {
+                console.error('Error processing message:', error);
+            }
+        };
+    </script>
+</body>
+</html>
