@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
+
     <title>SkyCraft Commander Board</title>
     <style>
         body {
@@ -34,6 +35,10 @@
         #coordinatesContainer::before {
             content: '🌐 ';
         }
+
+        #mapContainer {
+            height: 400px; /* Adjust the height as needed */
+        }
         
     </style>
 </head>
@@ -49,12 +54,38 @@
         <span id="coordinates"></span>
     </div>
     <div id="mapContainer">
-        <p> the map will be there...</p>
-        
+<!--         <p> the map will be there...</p> -->        
     </div>
 
 
     <script>
+        let map;
+        let circle;
+        
+        // Wait for the DOM to be ready
+        document.addEventListener('DOMContentLoaded', function () {
+            // Create a Leaflet map and set the view to a default location
+            let latitude = 51.505;
+            let longitude = -0.09;
+            map = L.map('mapContainer').setView([latitude, longitude], 8); // Default view 
+            // Initialise red circle
+            circle = L.circle([latitude, longitude], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                radius: 1
+            });
+ 
+            // Add a tile layer to the map
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+             //   minZoom: 13,
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Initialize the circle at the default location
+            circle.addTo(map);
+        });
+
         const socket = new WebSocket('ws://' + window.location.host + '/ws/ap/receive_data/');
         let latestCoordinates = null;
 
@@ -70,21 +101,36 @@
             console.log('WebSocket connection closed:', event);
         };
 
+
         socket.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                console.log('Received data from server:', data);
+                try {
+                    const data = JSON.parse(event.data);
+                    console.log('Received data from server:', data);
 
-                // Update the latest coordinates
-                latestCoordinates = data.coordinates;
+                    // Extract coordinates from the received data
+                    const { coordinates } = data;
+                    const [, latitude, longitude, altitude] = coordinates.match(/Latitude: ([-.\d]+) degrees, Longitude: ([-.\d]+) degrees, Altitude: ([-.\d]+) meters/);
 
-                // Display only the latest coordinates in the HTML element
-                const coordinatesContainer = document.getElementById('coordinatesContainer');
-                coordinatesContainer.innerHTML = `<strong>The drone's current location is:</strong> ${latestCoordinates}`;
-            } catch (error) {
-                console.error('Error processing message:', error);
-            }
-        };
+                    // Update with the latest coordinates
+                    const latestCoordinates = `${latitude}, ${longitude}, Altitude: ${altitude} meters`;
+
+                    // Display the latest coordinates in the HTML element
+                    const coordinatesContainer = document.getElementById('coordinatesContainer');
+                    coordinatesContainer.innerHTML = `<strong>The drone's current location is:</strong> ${latestCoordinates}`;
+
+                    // Update the map view with the new coordinates
+                    const [parsedLatitude, parsedLongitude] = latestCoordinates.split(',').slice(0, 2).map(coord => parseFloat(coord.trim()));
+                    map.setView([parsedLatitude, parsedLongitude], 18); 
+
+                    // Update the circle position
+                    circle.setLatLng([parsedLatitude, parsedLongitude]);
+
+                } catch (error) {
+                    console.error('Error processing message:', error);
+                }
+            };
+
+        
     </script>
 </body>
 </html>
