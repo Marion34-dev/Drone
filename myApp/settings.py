@@ -45,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'ap',
+    'drone',
 ]
 
 ASGI_APPLICATION = "myApp.asgi.application"

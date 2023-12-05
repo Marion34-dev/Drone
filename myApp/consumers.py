@@ -4,7 +4,9 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import telnetlib
 from django.conf import settings
 
-HOST = settings.IP_ADDRESS
+HOST = "192.168.1.149" 
+
+#HOST = settings.IP_ADDRESS
 
 class YourConsumer(AsyncWebsocketConsumer):
 

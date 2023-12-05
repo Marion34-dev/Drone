@@ -37,7 +37,7 @@
         }
 
         #mapContainer {
-            height: 400px; /* Adjust the height as needed */
+            height: 400px;
         }
         
     </style>
@@ -46,15 +46,14 @@
 <body>
     <div id="welcomeContainer"> 
         <h1>Welcome to the SkyCraft Commander Board 🚀</h1> 
-        <h2>Get ready to soar: explore the sky with our live drone location tracker.</h2>
+        <h2>Get ready to soar: explore the sky with this live drone location tracker.</h2>
            <h2>A real-time adventure awaits!</h2>
     </div>
     <div id="coordinatesContainer">
-        <p>The GPS module hasn't received all the required data yet, thank you for your patience...</p>
+        <p>Processing your request, thank you for your patience...</p>
         <span id="coordinates"></span>
     </div>
     <div id="mapContainer">
-<!--         <p> the map will be there...</p> -->        
     </div>
 
 
@@ -86,7 +85,7 @@
             circle.addTo(map);
         });
 
-        const socket = new WebSocket('ws://' + window.location.host + '/ws/ap/receive_data/');
+        const socket = new WebSocket('ws://' + window.location.host + '/ws/drone/tracker/');
         let latestCoordinates = null;
 
         socket.onopen = (event) => {
