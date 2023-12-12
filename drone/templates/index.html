@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 
 <head>
@@ -8,19 +8,21 @@
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
 
-    <title>SkyCraft Commander Board</title>
+    <title>The Zephyreus project</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
             margin: 20px;
-            background-color: rgba(114, 238, 238, 0.836);
-        }
+            /* background-color: rgba(114, 238, 238, 0.836); */
+            background-image: url('https://images.pexels.com/photos/314726/pexels-photo-314726.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-repeat: no-repeat;        }
 
         #welcomeContainer {
             font-size: 24px;
             margin-bottom: 10px;
             color: #333;
-            text-align:center;
+            text-align: center;
         }
 
         #coordinatesContainer {
@@ -30,24 +32,26 @@
             border-radius: 5px;
             border: 1px solid #ccc;
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
         }
 
         #coordinatesContainer::before {
             content: '🌐 ';
+            margin-right: 10px; 
         }
 
         #mapContainer {
-            height: 400px;
-        }
-        
+            height: 500px;
+            border: 2px solid #626161;        }
     </style>
 </head>
 
 <body>
-    <div id="welcomeContainer"> 
-        <h1>Welcome to the SkyCraft Commander Board 🚀</h1> 
+    <div id="welcomeContainer">
+        <h1>Welcome to the Zephyreus project 🚀</h1>
         <h2>Get ready to soar: explore the sky with this live drone location tracker.</h2>
-           <h2>A real-time adventure awaits!</h2>
+        <h2>A real-time adventure awaits!</h2>
     </div>
     <div id="coordinatesContainer">
         <p>Processing your request, thank you for your patience...</p>
@@ -60,7 +64,7 @@
     <script>
         let map;
         let circle;
-        
+
         // Wait for the DOM to be ready
         document.addEventListener('DOMContentLoaded', function () {
             // Create a Leaflet map and set the view to a default location
@@ -74,10 +78,10 @@
                 fillOpacity: 0.5,
                 radius: 1
             });
- 
+
             // Add a tile layer to the map
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-             //   minZoom: 13,
+                //   minZoom: 13,
                 attribution: '© OpenStreetMap contributors'
             }).addTo(map);
 
@@ -102,7 +106,155 @@
 
 
         socket.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                console.log('Received data from server:', data);
+
+                // Extract coordinates from the received data
+                const { coordinates } = data;
+                const [, latitude, longitude, altitude] = coordinates.match(/Latitude: ([-.\d]+) degrees, Longitude: ([-.\d]+) degrees, Altitude: ([-.\d]+) meters/);
+
+                // Update with the latest coordinates
+                const latestCoordinates = `${latitude}, ${longitude}, ${altitude}`;
+
+                // Display the latest coordinates in the HTML element
+                const coordinatesContainer = document.getElementById('coordinatesContainer');
+                coordinatesContainer.innerHTML = `<strong>The current coordinates are: </strong>
+                    <div class="coordinate">Latitude: ${latitude} degrees minutes seconds</div>
+                    <div class="coordinate">Longitude: ${longitude} degrees minutes seconds</div>
+                    <div class="coordinate">Altitude: ${altitude} meters</div>`;
+
+                    const style = document.createElement('style');
+                    style.innerHTML = `.coordinate {
+                        margin-left: 20px; /* Adjust the margin as needed */
+                    }`;
+                document.head.appendChild(style);
+
+                // Update the map view with the new coordinates
+                const [parsedLatitude, parsedLongitude] = latestCoordinates.split(',').slice(0, 2).map(coord => parseFloat(coord.trim()));
+                map.setView([parsedLatitude, parsedLongitude], 18);
+
+                // Update the circle position
+                circle.setLatLng([parsedLatitude, parsedLongitude]);
+
+            } catch (error) {
+                console.error('Error processing message:', error);
+            }
+        };
+
+
+    </script>
+</body>
+
+</html>  -->
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <title>The Zephyreus project</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-image: url('https://images.pexels.com/photos/314726/pexels-photo-314726.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1');
+            background-size: cover;
+            background-repeat: no-repeat;
+        }
+
+        #welcomeContainer {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #333;
+            text-align: center;
+        }
+
+        #coordinatesContainer {
+            font-size: 18px;
+            background-color: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        #coordinatesContainer::before {
+            content: '🌐 ';
+            margin-right: 10px;
+        }
+
+        #mapContainer {
+            height: 500px;
+            border: 2px solid #626161;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="welcomeContainer">
+        <h1>Welcome to the Zephyreus project 🚀</h1>
+        <h2>Get ready to soar: explore the sky with this live drone location tracker.</h2>
+        <h2>A real-time adventure awaits!</h2>
+    </div>
+    <div id="coordinatesContainer" class="hidden">
+        <p>Processing your request, thank you for your patience...</p>
+        <span id="coordinates"></span>
+    </div>
+    <div id="mapContainer" class="hidden"></div>
+
+    <script>
+        let map;
+        let circle;
+
+        // Function to initialize the map
+        function initializeMap(latitude, longitude) {
+            map = L.map('mapContainer').setView([latitude, longitude], 8);
+
+            // Initialize red circle
+            circle = L.circle([latitude, longitude], {
+                color: 'red',
+                fillColor: '#f03',
+                fillOpacity: 0.5,
+                radius: 1
+            });
+
+            // Add a tile layer to the map
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Initialize the circle at the default location
+            circle.addTo(map);
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const socket = new WebSocket('ws://' + window.location.host + '/ws/drone/tracker/');
+
+            socket.onopen = (event) => {
+                console.log('WebSocket connection opened:', event);
+            };
+
+            socket.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            socket.onclose = (event) => {
+                console.log('WebSocket connection closed:', event);
+            };
+
+            socket.onmessage = (event) => {
                 try {
+                    // Show the hidden elements when receiving the first message
+                    document.getElementById('coordinatesContainer').classList.remove('hidden');
+                    document.getElementById('mapContainer').classList.remove('hidden');
+
                     const data = JSON.parse(event.data);
                     console.log('Received data from server:', data);
 
@@ -111,25 +263,38 @@
                     const [, latitude, longitude, altitude] = coordinates.match(/Latitude: ([-.\d]+) degrees, Longitude: ([-.\d]+) degrees, Altitude: ([-.\d]+) meters/);
 
                     // Update with the latest coordinates
-                    const latestCoordinates = `${latitude}, ${longitude}, Altitude: ${altitude} meters`;
+                    const latestCoordinates = `${latitude}, ${longitude}, ${altitude}`;
 
-                    // Display the latest coordinates in the HTML element
+                    // Display the latest coordinates
                     const coordinatesContainer = document.getElementById('coordinatesContainer');
-                    coordinatesContainer.innerHTML = `<strong>The drone's current location is:</strong> ${latestCoordinates}`;
+                    coordinatesContainer.innerHTML = `<strong>The current coordinates are: </strong>
+                        <div class="coordinate">Latitude: ${latitude} degrees minutes seconds</div>
+                        <div class="coordinate">Longitude: ${longitude} degrees minutes seconds</div>
+                        <div class="coordinate">Altitude: ${altitude} meters</div>`;
 
-                    // Update the map view with the new coordinates
-                    const [parsedLatitude, parsedLongitude] = latestCoordinates.split(',').slice(0, 2).map(coord => parseFloat(coord.trim()));
-                    map.setView([parsedLatitude, parsedLongitude], 18); 
+                    const style = document.createElement('style');
+                    style.innerHTML = `.coordinate {
+                        margin-left: 20px;
+                    }`;
+                    document.head.appendChild(style);
 
-                    // Update the circle position
-                    circle.setLatLng([parsedLatitude, parsedLongitude]);
+                    // Check if the map is not initialized
+                    if (!map) {
+                        // Initialize the map with the received coordinates
+                        initializeMap(parseFloat(latitude), parseFloat(longitude));
+                    } else {
+                        // Update the map view with the new coordinates
+                        map.setView([parseFloat(latitude), parseFloat(longitude)], 18);
+                        // Update the circle position
+                        circle.setLatLng([parseFloat(latitude), parseFloat(longitude)]);
+                    }
 
                 } catch (error) {
                     console.error('Error processing message:', error);
                 }
             };
-
-        
+        });
     </script>
 </body>
+
 </html>

@@ -4,14 +4,12 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 import telnetlib
 from django.conf import settings
 
-HOST = "192.168.1.149" 
-
-#HOST = settings.IP_ADDRESS
+HOST = settings.IP_ADDRESS
 
 class YourConsumer(AsyncWebsocketConsumer):
 
-    async def connect(self):
-        await self.accept()
+    async def connect(self): # Websocket connection established
+        await self.accept() # 'Accept' the WebSocket connection
         asyncio.create_task(self.send_continuous_data())
 
     async def send_continuous_data(self):
@@ -19,7 +17,9 @@ class YourConsumer(AsyncWebsocketConsumer):
             data = await self.get_data()
             print("Continuous Execution:", data)
 
-            if 'data' in data and data['data'] is not None:
+            # if 'data' in data and data['data'] is not None:
+            if 'data' in data: # Check data has the 'data' key
+
                 gngga_values = data['data'].split(',')[1:]
 
                 if len(gngga_values) >= 10:
@@ -45,10 +45,16 @@ class YourConsumer(AsyncWebsocketConsumer):
 
             await asyncio.sleep(1.1)
 
+    # Obtain data from Telnet connection
     async def get_data(self):
         try:
+            # Establish a Telnet connection to the specified host
             tn = telnetlib.Telnet(HOST)
+            # Read data until a newline char or 1.1 seconds have passed
             database_result = await asyncio.to_thread(tn.read_until, b"\n", 1.1)
+            # Return the data in a dictionary format
             return {"data": database_result.decode("utf-8")}
+            
         except Exception as e:
+            # Return error message in a dictionary format
             return {"error": str(e)}
