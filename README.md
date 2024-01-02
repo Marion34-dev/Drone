@@ -23,9 +23,9 @@ Thank you for your interest and patience as I continue to work on the project.
 
 A GPS module is placed on an MKR1000, which is attached to the drone. <br>
 
-The C++ program is continuously extracting the altitude, longitude and latitude values from the #GNGGA sequences received from the GPS module and is sending this data to the Python program over Wi-Fi (via Telnet). 
+The C++ program is continuously receiving the #GNGGA sequences from the GPS module and writes the GPS data to the server. 
 <br><br>
-Additionally, the Python program creates a server, reads the data sent from the Arduino and displays it in the web browser.  
+Additionally, a Python program reads the data sent from the Arduino via Telnet, extracts the latitude, longitude and altitude values and displays them in the web browser using a Django server.
 
 ## Why this project?
 
