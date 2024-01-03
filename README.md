@@ -1,4 +1,4 @@
-# Welcome to my exciting Drone project!
+# Welcome to the Zephyreus project!
 
 The primary objective of this project is to develop a program that enables real-time display of the drone's location as it soars through the sky.
 
