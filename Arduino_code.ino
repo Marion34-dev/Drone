@@ -117,7 +117,7 @@ void ProcessGNGGACommand()
     // Write the GPS data to the server
     server.write(GPSBuffer, GPSIndex);
 
-    char *token = strtok(GPSBuffer, ",");
+   /* char *token = strtok(GPSBuffer, ",");
     int fieldIndex = 0;
     while (token != NULL)
     {
@@ -137,5 +137,5 @@ void ProcessGNGGACommand()
 
         token = strtok(NULL, ",");
         fieldIndex++;
-    }
+    } */
 }
